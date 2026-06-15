@@ -4,7 +4,22 @@ const cors = require('cors');
 const admin = require('firebase-admin');
 
 // Initialize Firebase Admin
-const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT;
+
+if (!serviceAccountJson) {
+  console.error('ERROR: FIREBASE_SERVICE_ACCOUNT environment variable is not set');
+  console.error('Please add this environment variable in Railway dashboard');
+  process.exit(1);
+}
+
+let serviceAccount;
+try {
+  serviceAccount = JSON.parse(serviceAccountJson);
+} catch (error) {
+  console.error('ERROR: Failed to parse FIREBASE_SERVICE_ACCOUNT as JSON');
+  console.error('Make sure the value is a valid JSON string');
+  process.exit(1);
+}
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
